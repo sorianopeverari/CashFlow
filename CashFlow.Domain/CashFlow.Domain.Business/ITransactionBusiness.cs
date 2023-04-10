@@ -1,9 +1,13 @@
-namespace CashFlow.Domain.Business;
-
 using System.Threading.Tasks;
 using CashFlow.Domain.Models;
 
-public interface ITransactionBusiness
+namespace CashFlow.Domain.Business
 {
-    Task<Transaction> Execute(Transaction transaction);
+    public interface ITransactionBusiness
+    {
+        Task<Transaction> Credit(Transaction transaction);
+
+
+        Task<Transaction> Debit(Transaction transaction);
+    }
 }

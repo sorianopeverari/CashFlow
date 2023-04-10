@@ -1,12 +1,18 @@
 ﻿using System.Threading.Tasks;
 using CashFlow.Domain.Models;
 
-namespace CashFlow.Domain.Business;
-
-public class TransactionBusiness : ITransactionBusiness
+namespace CashFlow.Domain.Business
 {
-    public async Task<Transaction> Execute(Transaction transaction)
+    public class TransactionBusiness : ITransactionBusiness
     {
-        return await Task.FromResult(transaction);
+        public async Task<Transaction> Credit(Transaction transaction)
+        {
+            return await Task.FromResult(new Transaction());
+        }
+
+        public async Task<Transaction> Debit(Transaction transaction)
+        {
+            return await Task.FromResult(new Transaction());
+        }
     }
 }

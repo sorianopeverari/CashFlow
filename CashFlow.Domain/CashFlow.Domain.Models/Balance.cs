@@ -1,9 +1,16 @@
-namespace CashFlow.Domain.Models;
+using CashFlow.Domain.Models.Enums;
 using System;
 
-public class Balance
+namespace CashFlow.Domain.Models
 {
-    public DateTime Date { get; set; }
+    public class Balance
+    {
+        public long Begin { get; set; }
 
-    public double Amount { get; set; }
+        public long End { get; set; }
+
+        public IEnumerable<Transaction>? Transactions { get; set; }
+
+        public BalanceType Type { get; set; }
+    }
 }

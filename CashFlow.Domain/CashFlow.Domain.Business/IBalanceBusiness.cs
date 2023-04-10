@@ -1,9 +1,10 @@
-namespace CashFlow.Domain.Business;
-
 using System.Threading.Tasks;
 using CashFlow.Domain.Models;
 
-public interface IBalanceBusiness
+namespace CashFlow.Domain.Business
 {
-   Task<IEnumerable<Balance>> GetByTime(int month, int day, int year);
+   public interface IBalanceBusiness
+   {
+      Task<Balance> GetAmountSumByRange(long begin, long end);
+   }
 }

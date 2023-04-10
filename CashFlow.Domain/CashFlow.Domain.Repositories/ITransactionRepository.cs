@@ -2,11 +2,12 @@
 using System;
 using CashFlow.Domain.Models;
 
-namespace CashFlow.Domain.Repositories;
-
-public interface ITransactionRepository
+namespace CashFlow.Domain.Repositories
 {
-    Task<Transaction> Create();
+    public interface ITransactionRepository
+    {
+        Task<Transaction> Credit(Transaction transaction);
 
-    Task<double> GetAmount(DateTime dateTime);
+        Task<Transaction> Debit(Transaction transaction);
+    }
 }

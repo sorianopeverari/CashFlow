@@ -1,10 +1,9 @@
-namespace CashFlow.Domain.Models;
-using System;
-
-
-public class Transaction
+namespace CashFlow.Domain.Models
 {
-    public DateTime Date { get; set; }
+    public class Transaction
+    {
+        public long EffectiveDate { get; set; }
 
-    public double Amount { get; set; }
+        public double Amount { get; set; }
+    }
 }

@@ -1,12 +1,13 @@
 ﻿using System.Threading.Tasks;
 using CashFlow.Domain.Models;
 
-namespace CashFlow.Domain.Business;
-
-public class BalanceBusiness : IBalanceBusiness
+namespace CashFlow.Domain.Business
 {
-    public async Task<Balance> Execute(Balance balance)
+    public class BalanceBusiness : IBalanceBusiness
     {
-        return await Task.FromResult(balance);
+        public async Task<Balance> GetAmountSumByRange(long begin, long end)
+        {
+            return await Task.FromResult(new Balance());
+        }
     }
 }
