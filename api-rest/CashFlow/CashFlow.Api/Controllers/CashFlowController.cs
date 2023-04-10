@@ -13,8 +13,14 @@ namespace CashFlow.Api.Controllers
             _logger = logger;
         }
 
-        [HttpPost]
-        public Transaction Post(double amount)
+        [HttpPost("Credit")]
+        public Transaction Credit(double amount)
+        {
+            return new Transaction();
+        }
+
+        [HttpPost("Debit")]
+        public Transaction Debit(double amount)
         {
             return new Transaction();
         }

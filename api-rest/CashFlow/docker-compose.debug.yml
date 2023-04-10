@@ -1,0 +1,50 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
+version: '3.4'
+
+services:
+  api:
+    image: cash-flow-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 5000:80
+      - 5001:443
+    depends_on:
+      - db_rds
+      - db_dw
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=dockerhttps
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
+      - ~/.aspnet/https:/https:ro
+
+  db_rds:
+    image: postgres
+    container_name: 'postgres_rds'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Postgres@2023
+      - POSTGRES_DB=cash_flow_control
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  db_dw: 
+    image: postgres
+    container_name: 'postgres_dw'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Postgres@2023
+      - POSTGRES_DB=cash_flow_report
+    volumes:
+      - pgdata:/var/lib/postgresql/data 
+    ports:
+      - 5433:5432
+      
+volumes:
+    pgdata:
