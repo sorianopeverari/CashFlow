@@ -1,4 +1,6 @@
 using CashFlow.Domain.Repositories;
+using CashFlow.Infra.Repositories.PgDW;
+using CashFlow.Infra.Repositories.PgRDS;
 using CashFlow.Domain.Business;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,8 +15,10 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<ITransactionBusiness, TransactionBusiness>();
-builder.Services.AddSingleton<IBalanceBusiness, BalanceBusiness>();
+builder.Services.AddTransient<ITransactionBusiness, TransactionBusiness>();
+builder.Services.AddTransient<IBalanceBusiness, BalanceBusiness>();
+builder.Services.AddTransient<ITransactionRepository, TransactionPgRDSRepository>();
+builder.Services.AddTransient<IBalanceRepository, BalancePgDWRepository>();
 
 var app = builder.Build();
 

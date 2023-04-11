@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\CashFlow.Domain\CashFlow.Domain.Repositories\CashFlow.Domain.Repositories.csproj" />
+    <ProjectReference Include="..\CashFlow.Infra.Repositories.Providers\CashFlow.Infra.Repositories.Providers.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -6,5 +6,7 @@ namespace CashFlow.Domain.Business
    public interface IBalanceBusiness
    {
       Task<Balance> GetAmountSumByRange(long begin, long end);
+
+      Task<Balance> Create(Balance balance);
    }
 }

@@ -30,9 +30,10 @@ services:
       - POSTGRES_PASSWORD=Postgres@2023
       - POSTGRES_DB=cash_flow_control
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdatards:/var/lib/postgresql/data
+      - ./initrds.sql:/docker-entrypoint-initdb.d/initrds.sql
     ports:
-      - 5432:5432
+      - 5432:5432/tcp
 
   db_dw: 
     image: postgres
@@ -42,9 +43,22 @@ services:
       - POSTGRES_PASSWORD=Postgres@2023
       - POSTGRES_DB=cash_flow_report
     volumes:
-      - pgdata:/var/lib/postgresql/data 
+      - pgdatadw:/var/lib/postgresql/data
+      - ./initdw.sql:/docker-entrypoint-initdb.d/initdw.sql
     ports:
-      - 5433:5432
+      - 5433:5432/tcp
+      
+  pgadmin:
+    image: dpage/pgadmin4
+    environment: 
+      PGADMIN_DEFAULT_EMAIL: "postgres@postgres.com"
+      PGADMIN_DEFAULT_PASSWORD: "Postgres@2023"
+    ports: 
+        - 16543:80/tcp
+    depends_on:
+    - db_dw
+    - db_rds
       
 volumes:
-    pgdata:
+    pgdatards:
+    pgdatadw:

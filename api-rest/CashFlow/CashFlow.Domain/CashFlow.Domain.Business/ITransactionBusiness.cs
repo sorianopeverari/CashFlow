@@ -9,5 +9,7 @@ namespace CashFlow.Domain.Business
 
 
         Task<Transaction> Debit(Transaction transaction);
+
+        Task<Transaction> GetSumAmoutByDay(long day);
     }
 }
