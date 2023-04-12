@@ -28,10 +28,10 @@ It's a PoC for a Solutions Architecture challenge.
     
 ## Non-Functional Requirements
 
- * **NFR-01 - Date**
+* **NFR-01 - Date**
  
-   * **NFR-01.01 - Date time zone**
+  * **NFR-01.01 - Date time zone**
    - Date information MUST BE stored and interoperable in the UTC time zone. The UI layer will be responsible for the conversion.
  
-   * **NFR-01.02 - Current time refenrece**
+  * **NFR-01.02 - Current time refenrece**
    - Date information MUST BE generated from the business layer when a current time is required.
