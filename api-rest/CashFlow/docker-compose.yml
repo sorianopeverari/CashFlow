@@ -2,25 +2,25 @@
 version: '3.4'
 
 services:
-  api:
+  api_control:
     image: cash-flow-api
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - 5000:80
-      - 5001:443
+      #- 5001:443
     depends_on:
       - db_rds
       - db_dw
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=dockerhttps
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_URLS=http://+:80 #;https://+:443
+      #- ASPNETCORE_Kestrel__Certificates__Default__Password=dockerhttps
+      #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     volumes:
       - ~/.vsdbg:/remote_debugger:rw
-      - ~/.aspnet/https:/https:ro
+      #- ~/.aspnet/https:/https:ro
 
   db_rds:
     image: postgres
