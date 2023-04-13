@@ -7,6 +7,6 @@ namespace CashFlow.Domain.Repositories
     {
         Task<Balance> GetAmountSumByRange(long begin, long end);
 
-         Task<Balance> Create(Balance balance);
+        Task Create(long day, double amountSum);
     }
 }

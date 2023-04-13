@@ -1,4 +1,5 @@
-﻿using CashFlow.Domain.Models;
+﻿using CashFlow.Domain.Models.Utils;
+using CashFlow.Domain.Models;
 using CashFlow.Domain.Repositories;
 
 namespace CashFlow.Domain.Business
@@ -37,7 +38,7 @@ namespace CashFlow.Domain.Business
             {
                 throw new Exception("Transaction amount can't lower or equals than zero");
             }
-            transaction.EffectiveDate = base.DateTimeToTimeStamp(DateTime.Now);
+            transaction.EffectiveDate = DateUtil.ToTimestamp(DateTime.Now);
         }
     }
 }

@@ -13,9 +13,9 @@ namespace CashFlow.Domain.Business
             _balanceRepository = balanceRepository;
         }
 
-        public async Task<Balance> Create(Balance balance)
+        public async Task Create(long day, double amountSum)
         {
-            await _balanceRepository.Create(balance);
+            await _balanceRepository.Create(day, amountSum);
             throw new NotImplementedException();
         }
 

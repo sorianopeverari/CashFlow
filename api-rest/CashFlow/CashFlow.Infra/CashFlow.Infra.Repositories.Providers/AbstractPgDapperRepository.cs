@@ -16,12 +16,5 @@ namespace CashFlow.Infra.Repositories.Providers
         {
             return _conn;
         }
-
-        protected DateTime TimeStampToDateTime(long timestamp)
-        {
-            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            epoch = epoch.AddSeconds((double)timestamp).ToUniversalTime();
-            return epoch;
-        }
     }
 }

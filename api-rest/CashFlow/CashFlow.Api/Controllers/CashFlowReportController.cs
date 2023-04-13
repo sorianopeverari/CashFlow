@@ -25,9 +25,10 @@ namespace CashFlow.Api.Controllers
         }
 
         [HttpPost("Balance")]
-        public async Task<Balance> Post(Balance balance)
+        public async Task<ActionResult> Post(long day, double amountSum)
         {
-            return await _balanceBusiness.Create(balance);
+            await _balanceBusiness.Create(day, amountSum);
+            return Ok();
         }
     }
 }
