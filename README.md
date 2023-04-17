@@ -4,7 +4,7 @@ It's a PoC for a Solutions Architecture challenge.
 
 ## Solution
 
-For start the solution access [api-rest/CashFlow](api-rest/CashFlow).
+For start the solution access [solutions/CashFlow](solutions/CashFlow).
 
 ## Documentation
 

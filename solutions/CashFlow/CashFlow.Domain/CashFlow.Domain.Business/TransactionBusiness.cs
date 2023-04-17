@@ -15,30 +15,29 @@ namespace CashFlow.Domain.Business
 
         public async Task<Transaction> Credit(Transaction transaction)
         {
-            this.BindCommon(transaction);
-            return await _transactionRepository.Credit(transaction);
+            this.BindAndValidationToCreate(transaction);
+            return await _transactionRepository.Create(transaction);
         }
 
         public async Task<Transaction> Debit(Transaction transaction)
         {
-            this.BindCommon(transaction);
+            this.BindAndValidationToCreate(transaction);
             transaction.Amount = transaction.Amount * (-1);
-            return await _transactionRepository.Debit(transaction);
+            long balanceDate = DateUtil.ToTimestamp(DateUtil.ToDateTime(transaction.EffectiveDate).Date);
+            return await _transactionRepository.CreateIfBalancePositive(transaction, balanceDate);
         }
-
-        public async Task<Transaction> GetSumAmoutByDay(long day)
+        public async Task<double> GetSumAmout(long effectiveDate)
         {
-            return await _transactionRepository.GetSumAmoutByDay(day);
+            return await _transactionRepository.GetSumAmout(effectiveDate);
         }
-        
 
-        private void BindCommon(Transaction transaction)
+        private void BindAndValidationToCreate(Transaction transaction)
         {
             if(transaction.Amount <= 0)
             {
                 throw new Exception("Transaction amount can't lower or equals than zero");
             }
-            transaction.EffectiveDate = DateUtil.ToTimestamp(DateTime.Now);
+            transaction.EffectiveDate = DateUtil.ToTimestamp(DateTime.UtcNow);
         }
     }
 }

@@ -62,7 +62,7 @@ namespace CashFlow.Infra.Repositories.PgDW
             using(IDbConnection conn = base.GetConnection())
             {
                 string query = @"INSERT INTO public.d_time(id, monthh, dayy, yearr)
-                                    VALUES (CAST(@id AS uuid), @monthh, @dayy, @yearr))";
+                                    VALUES (CAST(@id AS uuid), @monthh, @dayy, @yearr)";
                 try
                 {
                     conn.Open();
@@ -85,25 +85,32 @@ namespace CashFlow.Infra.Repositories.PgDW
         public async Task<Balance> GetAmountSumByRange(long begin, long end)
         {
             DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("begin", DateUtil.ToDateTime(begin), DbType.DateTime);
-            parameters.Add("end", DateUtil.ToDateTime(end), DbType.DateTime);
+            parameters.Add("beginn", DateUtil.ToDateTime(begin).AddDays(-1), DbType.Date);
+            parameters.Add("endd", DateUtil.ToDateTime(end).AddDays(1), DbType.Date);
             
+            Console.WriteLine("");
+            Console.WriteLine(DateUtil.ToDateTime(begin));
+            Console.WriteLine(DateUtil.ToDateTime(end));
+            Console.WriteLine("");
+
             using(IDbConnection conn = base.GetConnection())
             {
-                string query = @"SELECT 
+                string query = @"SELECT
                                     '' AS Id
-                                    ,CAST(EXTRACT(epoch from make_date(dt.yearr, dt.monthh, dt.dayy)::date) AS EffectiveDate
-                                    ,fb.transaction_amount_sum AS amount
+                                    ,EXTRACT(epoch FROM make_date(dt.yearr, dt.dayy, dt.monthh))::bigint AS EffectiveDate
+                                    ,fb.transaction_amount_sum AS Amount
                                     FROM public.d_time dt
                                 INNER JOIN public.fact_balance fb
                                 ON dt.id = fb.time_id
-                                WHERE make_date(dt.yearr, dt.monthh, dt.dayy)::date >= @begin
-                                AND make_date(dt.yearr, dt.monthh, dt.dayy)::date <= @end";
+                                WHERE make_date(dt.yearr, dt.dayy, dt.monthh)::date > @beginn
+                                AND make_date(dt.yearr, dt.dayy, dt.monthh)::date < @endd";
                 try
                 {
                     conn.Open();
 
-                    IEnumerable<Transaction> transactions = await conn.QueryAsync<Transaction>(query);
+                    IEnumerable<Transaction> transactions = await conn.QueryAsync<Transaction>(query, parameters);
+
+                     Console.WriteLine("");
 
                     return new Balance()
                     {
@@ -118,7 +125,6 @@ namespace CashFlow.Infra.Repositories.PgDW
                     conn?.Close();
                 }
             }
-            throw new NotImplementedException();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace CashFlow.Infra.Repositories.PgRDS
         {
         }
 
-        public async Task<Transaction> Credit(Transaction transaction)
+        public async Task<Transaction> Create(Transaction transaction)
         {
             Transaction transactionCreated = new Transaction()
             {
@@ -40,7 +40,7 @@ namespace CashFlow.Infra.Repositories.PgRDS
 
                     if(rowsAffected <= 0)
                     {
-                        throw new Exception("Error trying insert credit transaction.");
+                        throw new Exception("Error trying insert transaction.");
                     }
                 }
                 finally
@@ -52,7 +52,7 @@ namespace CashFlow.Infra.Repositories.PgRDS
             return transactionCreated;
         }
 
-        public async Task<Transaction> Debit(Transaction transaction)
+        public async Task<Transaction> CreateIfBalancePositive(Transaction transaction, long balanceDate)
         {
             Transaction transactionCreated = new Transaction()
             {
@@ -64,6 +64,7 @@ namespace CashFlow.Infra.Repositories.PgRDS
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("id", new Guid(transactionCreated.Id), DbType.Guid);
             parameters.Add("effective_date", DateUtil.ToDateTime(transactionCreated.EffectiveDate), DbType.DateTime);
+            parameters.Add("balance_date", DateUtil.ToDateTime(balanceDate), DbType.Date);
             parameters.Add("amount", transactionCreated.Amount, DbType.Double);
             
             using(IDbConnection conn = base.GetConnection())
@@ -75,7 +76,7 @@ namespace CashFlow.Infra.Repositories.PgRDS
                                     WHERE EXISTS(SELECT tr.effective_date::date as effective_date
                                         ,SUM(amount) AS amount
                                         FROM public.transaction AS tr
-                                        WHERE tr.effective_date::date = CAST(@effective_date AS DATE)
+                                        WHERE tr.effective_date::date = @balance_date
                                         GROUP BY tr.effective_date::date
                                         HAVING SUM(tr.amount)+(@amount) >= 0)";
                 try
@@ -85,8 +86,7 @@ namespace CashFlow.Infra.Repositories.PgRDS
 
                     if(rowsAffected <= 0)
                     {
-                        throw new Exception(@"Error trying insert debit transaction. 
-                                              Check if current daily balance enough this debit transaction.");
+                        throw new Exception(@"Error trying insert transaction where balance is positive");
                     }
                 }
                 finally
@@ -98,25 +98,21 @@ namespace CashFlow.Infra.Repositories.PgRDS
             return transactionCreated;
         }
 
-        public async Task<Transaction> GetSumAmoutByDay(long day)
+        public async Task<double> GetSumAmout(long balanceDate)
         {
             DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("effective_date", DateUtil.ToDateTime(day), DbType.DateTime);
+            parameters.Add("balance_date", DateUtil.ToDateTime(balanceDate), DbType.Date);
             
             using(IDbConnection conn = base.GetConnection())
             {
-                string query = @"SELECT '' AS Id 
-                                    ,cast(extract(epoch from tr.effective_date::date) as bigint)
-                                    AS EffectiveDate
-                                    ,SUM(amount) AS Amount
+                string query = @"SELECT SUM(amount) AS Amount
                                     FROM public.transaction AS tr
-                                    WHERE tr.effective_date::date = CAST(@effective_date AS DATE)
+                                    WHERE tr.effective_date::date = @balance_date
                                     GROUP BY tr.effective_date::date";
                 try
                 {
                     conn.Open();
-
-                    return await conn.QuerySingleAsync<Transaction>(query, parameters);
+                    return await conn.QuerySingleAsync<double>(query, parameters);
                 }
                 finally
                 {

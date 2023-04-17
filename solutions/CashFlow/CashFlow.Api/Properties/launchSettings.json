@@ -1,0 +1,20 @@
+﻿{
+  "profiles": {
+    "Control": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Control.Development"
+      }
+    },
+    "Report": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:6000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Report.Development"
+      }
+    }
+  }
+}

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CashFlow.Domain.Models;
+using CashFlow.Domain.Models.Enums;
 using CashFlow.Domain.Repositories;
 
 namespace CashFlow.Domain.Business
@@ -13,14 +14,14 @@ namespace CashFlow.Domain.Business
             _balanceRepository = balanceRepository;
         }
 
-        public async Task Create(long day, double amountSum)
+        public async Task Create(long effectiveDate, double amountSum, BalanceType balanceType)
         {
-            await _balanceRepository.Create(day, amountSum);
-            throw new NotImplementedException();
+            await _balanceRepository.Create(effectiveDate, amountSum);
         }
 
-        public async Task<Balance> GetAmountSumByRange(long begin, long end)
+        public async Task<Balance> GetAmountSumByRange(long begin, long end, BalanceType balanceType)
         {
+            await _balanceRepository.GetAmountSumByRange(begin, end);
             return await Task.FromResult(new Balance());
         }
     }

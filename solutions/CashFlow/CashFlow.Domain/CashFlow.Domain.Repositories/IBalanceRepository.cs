@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using CashFlow.Domain.Models;
+using CashFlow.Domain.Models.Enums;
 
 namespace CashFlow.Domain.Repositories
 {
