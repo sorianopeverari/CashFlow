@@ -16,6 +16,10 @@ It's a PoC for a Solutions Architecture challenge.
 
 ![Domain](images/Domain.png)
 
+## Deployment Diagram
+
+![Deployment](images/Deployment.png)
+
 ## MER - RDS
 
 ![MER-RDS](images/MER-RDS.png)
