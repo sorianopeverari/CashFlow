@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - 5000:80
-      #- 5001:443
+      #- 5443:443
     depends_on:
       - db_rds
     environment:
@@ -19,7 +19,7 @@ services:
       #- ASPNETCORE_Kestrel__Certificates__Default__Password=dockerhttps
       #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     volumes:
-      - ~/.vsdbg:/remote_debugger:rw
+      - ~/.vsdbgcontrol:/remote_debugger:rw
       #- ~/.aspnet/https:/https:ro
 
   api_report:
@@ -29,8 +29,8 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-     - 6000:80
-     #- 6001:443
+     - 5001:80
+     #- 5444:443
     depends_on:
      - db_dw
     environment:
@@ -39,7 +39,7 @@ services:
      #- ASPNETCORE_Kestrel__Certificates__Default__Password=dockerhttps
      #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     volumes:
-     - ~/.vsdbg:/remote_debugger:rw
+     - ~/.vsdbgreport:/remote_debugger:rw
      #- ~/.aspnet/https:/https:ro
    
   db_rds:

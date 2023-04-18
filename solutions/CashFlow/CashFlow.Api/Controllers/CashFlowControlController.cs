@@ -7,7 +7,7 @@ using CashFlow.Api.Confgis;
 namespace CashFlow.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]")]    
     [FeatureGate(FeatureFlags.Control)]
     public class CashFlowControlController : ControllerBase
     {   
