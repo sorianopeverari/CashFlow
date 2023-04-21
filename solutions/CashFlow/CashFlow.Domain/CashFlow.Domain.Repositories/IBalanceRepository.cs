@@ -6,8 +6,8 @@ namespace CashFlow.Domain.Repositories
 {
     public interface IBalanceRepository
     {
-        Task<Balance> GetAmountSumByRange(long begin, long end);
+        Task<Balance> GetAmountSumByRange(long beginn, long endd, BalanceType balanceType);
 
-        Task Create(long day, double amountSum);
+        Task Create(long time, double amountSum, BalanceType balanceType);
     }
 }

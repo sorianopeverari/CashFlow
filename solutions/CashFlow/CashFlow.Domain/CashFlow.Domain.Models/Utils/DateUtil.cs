@@ -4,16 +4,22 @@ namespace CashFlow.Domain.Models.Utils
     {
         public static DateTime ToDateTime(long timestamp)
         {
-            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            epoch = epoch.AddSeconds((double)timestamp).ToUniversalTime();
-            return epoch;
+            return DateTime.UnixEpoch.AddSeconds((double)timestamp).ToUniversalTime();
         }
 
         public static long ToTimestamp(DateTime dateTime)
+        {;
+            return (long)(dateTime - DateTime.UnixEpoch).TotalSeconds;
+        }
+
+        public static long ToTimestampOnlyDate(DateTime dateTime)
         {
-            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            TimeSpan elapsedTime = dateTime - epoch;
-            return (long)elapsedTime.TotalSeconds;
+            return (long)(dateTime.Date - DateTime.UnixEpoch).TotalSeconds;
+        }
+
+        public static long ToTimestampOnlyDate(long timestamp)
+        {
+            return (long)(ToDateTime(timestamp).Date - DateTime.UnixEpoch).TotalSeconds;
         }
     }
 }

@@ -15,19 +15,13 @@ namespace CashFlow.Infra.Repositories.PgRDS
         {
         }
 
-        public async Task<Transaction> Create(Transaction transaction)
+        public async Task Create(Transaction transaction)
         {
-            Transaction transactionCreated = new Transaction()
-            {
-                Id = Guid.NewGuid().ToString(),
-                EffectiveDate = transaction.EffectiveDate,
-                Amount = transaction.Amount
-            };
-
+            Guid id = Guid.NewGuid();
             DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("id", new Guid(transactionCreated.Id), DbType.Guid);
-            parameters.Add("effective_date", DateUtil.ToDateTime(transactionCreated.EffectiveDate), DbType.DateTime);
-            parameters.Add("amount", transactionCreated.Amount, DbType.Double);
+            parameters.Add("id", id, DbType.Guid);
+            parameters.Add("effective_date", DateUtil.ToDateTime(transaction.EffectiveDate), DbType.DateTime);
+            parameters.Add("amount", transaction.Amount, DbType.Double);
             
             using(IDbConnection conn = base.GetConnection())
             {
@@ -42,30 +36,24 @@ namespace CashFlow.Infra.Repositories.PgRDS
                     {
                         throw new Exception("Error trying insert transaction.");
                     }
+                    transaction.Id = id.ToString();
                 }
                 finally
                 {
                     conn?.Close();
                 }
             }
-
-            return transactionCreated;
         }
 
-        public async Task<Transaction> CreateIfBalancePositive(Transaction transaction, long balanceDate)
+        public async Task CreateIfBalancePositive(Transaction transaction, long balanceDate)
         {
-            Transaction transactionCreated = new Transaction()
-            {
-                Id = Guid.NewGuid().ToString(),
-                EffectiveDate = transaction.EffectiveDate,
-                Amount = transaction.Amount
-            };
+            Guid id = Guid.NewGuid();
 
             DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("id", new Guid(transactionCreated.Id), DbType.Guid);
-            parameters.Add("effective_date", DateUtil.ToDateTime(transactionCreated.EffectiveDate), DbType.DateTime);
+            parameters.Add("id", id, DbType.Guid);
+            parameters.Add("effective_date", DateUtil.ToDateTime(transaction.EffectiveDate), DbType.DateTime);
             parameters.Add("balance_date", DateUtil.ToDateTime(balanceDate), DbType.Date);
-            parameters.Add("amount", transactionCreated.Amount, DbType.Double);
+            parameters.Add("amount", transaction.Amount, DbType.Double);
             
             using(IDbConnection conn = base.GetConnection())
             {
@@ -88,14 +76,14 @@ namespace CashFlow.Infra.Repositories.PgRDS
                     {
                         throw new Exception(@"Error trying insert transaction where balance is positive");
                     }
+
+                    transaction.Id = id.ToString();
                 }
                 finally
                 {
                     conn?.Close();
                 }
             }
-
-            return transactionCreated;
         }
 
         public async Task<double> GetSumAmout(long balanceDate)
