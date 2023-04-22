@@ -16,13 +16,12 @@ namespace CashFlow.Domain.Business
 
         public async Task Create(long effectiveDate, double amountSum, BalanceType balanceType)
         {
-            await _balanceRepository.Create(effectiveDate, amountSum);
+            await _balanceRepository.Create(effectiveDate, amountSum, balanceType);
         }
 
         public async Task<Balance> GetAmountSumByRange(long begin, long end, BalanceType balanceType)
         {
-            await _balanceRepository.GetAmountSumByRange(begin, end);
-            return await Task.FromResult(new Balance());
+            return await _balanceRepository.GetAmountSumByRange(begin, end, balanceType);
         }
     }
 }

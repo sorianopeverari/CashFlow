@@ -5,6 +5,10 @@ using Dapper;
 using CashFlow.Infra.Repositories.Providers;
 using CashFlow.Domain.Models.Utils;
 using CashFlow.Domain.Models.Enums;
+using System.Transactions;
+using Transaction = CashFlow.Domain.Models.Transaction;
+using CashFlow.Domain.Repositories.Exceptions;
+using Npgsql;
 
 namespace CashFlow.Infra.Repositories.PgDW
 {
@@ -14,17 +18,21 @@ namespace CashFlow.Infra.Repositories.PgDW
         {
         }
 
-        public async Task Create(long day, double amountSum)
+        public async Task Create(long time, double transactionAmountSum, BalanceType balanceType)
         {
-            string time_id = await this.CreateTime(day);
-            await this.CreateFactBalance(time_id, amountSum);
+            using(TransactionScope ts = new TransactionScope())
+            {
+                string time_id = await this.CreateTime(time);
+                await this.CreateFactBalance(time_id, transactionAmountSum);
+                ts.Complete();
+            }
         }
 
-        private async Task CreateFactBalance(string time_id, double amountSum)
+        private async Task CreateFactBalance(string time_id, double transactionAmountSum)
         {   
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("time_id", new Guid(time_id), DbType.Guid);
-            parameters.Add("transaction_amount_sum", amountSum, DbType.Int32);
+            parameters.Add("transaction_amount_sum", transactionAmountSum, DbType.Int32);
             
             using(IDbConnection conn = base.GetConnection())
             {
@@ -37,8 +45,16 @@ namespace CashFlow.Infra.Repositories.PgDW
 
                     if(rowsAffected <= 0)
                     {
-                        throw new Exception("Error trying insert fact balance.");
+                        throw new UnexpectedRepositoryException("Register don't persisted");
                     }
+                }
+                catch(TimeoutException ex)
+                {
+                    throw new UnavailableRepositoryException(ex.Message, ex);
+                }
+                catch(NpgsqlException ex)
+                {
+                    throw new UnexpectedRepositoryException(ex.Message, ex);
                 }
                 finally
                 {
@@ -47,17 +63,16 @@ namespace CashFlow.Infra.Repositories.PgDW
             }
         }
 
-        private async Task<string> CreateTime(long day)
+        private async Task<string> CreateTime(long time)
         {
-            DateTime epoch = DateUtil.ToDateTime(day);
-            
+            DateTime dateTime = DateUtil.ToDateTime(time);
             Guid id = Guid.NewGuid();
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("id", id, DbType.Guid);
-            parameters.Add("monthh", epoch.Month, DbType.Int32);
-            parameters.Add("dayy", epoch.Day, DbType.Int32);
-            parameters.Add("yearr", epoch.Year, DbType.Int32);
+            parameters.Add("monthh", dateTime.Month, DbType.Int32);
+            parameters.Add("dayy", dateTime.Day, DbType.Int32);
+            parameters.Add("yearr", dateTime.Year, DbType.Int32);
             
             using(IDbConnection conn = base.GetConnection())
             {
@@ -70,29 +85,27 @@ namespace CashFlow.Infra.Repositories.PgDW
 
                     if(rowsAffected <= 0)
                     {
-                        throw new Exception("Error trying insert time.");
+                        throw new UnexpectedRepositoryException("Register don't persisted");
                     }
+                }
+                catch(PostgresException ex)
+                {
+                    throw new UnexpectedRepositoryException(ex.Message, ex);
                 }
                 finally
                 {
                     conn?.Close();
                 }
             }
-
             return id.ToString();
         }
 
-        public async Task<Balance> GetAmountSumByRange(long begin, long end)
+        public async Task<Balance> GetAmountSumByRange(long begin, long end, BalanceType balanceType)
         {
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("beginn", DateUtil.ToDateTime(begin).AddDays(-1), DbType.Date);
             parameters.Add("endd", DateUtil.ToDateTime(end).AddDays(1), DbType.Date);
             
-            Console.WriteLine("");
-            Console.WriteLine(DateUtil.ToDateTime(begin));
-            Console.WriteLine(DateUtil.ToDateTime(end));
-            Console.WriteLine("");
-
             using(IDbConnection conn = base.GetConnection())
             {
                 string query = @"SELECT
@@ -109,9 +122,7 @@ namespace CashFlow.Infra.Repositories.PgDW
                     conn.Open();
 
                     IEnumerable<Transaction> transactions = await conn.QueryAsync<Transaction>(query, parameters);
-
-                     Console.WriteLine("");
-
+                    
                     return new Balance()
                     {
                         Begin = begin,
@@ -119,6 +130,10 @@ namespace CashFlow.Infra.Repositories.PgDW
                         Type = BalanceType.SumByDay,
                         Transactions = transactions
                     };
+                }
+                catch(PostgresException ex)
+                {
+                    throw new UnexpectedRepositoryException(ex.Message, ex);
                 }
                 finally
                 {
