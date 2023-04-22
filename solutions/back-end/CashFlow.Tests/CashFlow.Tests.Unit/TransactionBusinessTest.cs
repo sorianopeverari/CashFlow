@@ -16,11 +16,12 @@ public class TransactionBusinessTest
     [Fact]
     public void Credit_AmountEqZero_ThrowValidationException()
     {
-        TransactionBusiness transactionBusiness = this.SetupDefaultTransactionBusiness();
-        Transaction inputTransaction = new Transaction() { Amount = 0 };
+        TransactionBusiness arrangeTransactionBusiness = this.SetupDefaultTransactionBusiness();
+        Transaction fakeTransaction = new Transaction() { Amount = 0 };
+        
+        Task actual = arrangeTransactionBusiness.Credit(fakeTransaction); 
 
-        Assert.ThrowsAsync<ValidationException>(() => 
-            transactionBusiness.Credit(inputTransaction));
+        Assert.ThrowsAsync<ValidationException>(() => actual);
     }
 
     [Theory]
@@ -29,11 +30,11 @@ public class TransactionBusinessTest
     [InlineData(12012.2, 12012.2)]
     public async void Credit_PositiveAmount_ReturnSameAmount(double input, double expected)
     {
-        TransactionBusiness transactionBusiness = this.SetupDefaultTransactionBusiness();
-        Transaction inputTransaction = new Transaction() { Amount = input };
+        TransactionBusiness arrangeTransactionBusiness = this.SetupDefaultTransactionBusiness();
+        Transaction fakeTransaction = new Transaction() { Amount = input };
 
-        Transaction actualTransaction = await transactionBusiness.Credit(inputTransaction);
-        double actual = actualTransaction.Amount;
+        Transaction actTransaction = await arrangeTransactionBusiness.Credit(fakeTransaction);
+        double actual = actTransaction.Amount;
         
         Assert.Equal(expected, actual);
     }
@@ -44,21 +45,23 @@ public class TransactionBusinessTest
     [InlineData(-12012.2)]
     public void Credit_NegativeAmount_ThrowValidationException(double input)
     {
-        TransactionBusiness transactionBusiness = this.SetupDefaultTransactionBusiness();
-        Transaction inputTransaction = new Transaction() { Amount = input };
+        TransactionBusiness arrangeTransactionBusiness = this.SetupDefaultTransactionBusiness();
+        Transaction fakeTransaction = new Transaction() { Amount = input };
 
-        Assert.ThrowsAsync<ValidationException>(() => 
-            transactionBusiness.Credit(inputTransaction));
+        Task actual = arrangeTransactionBusiness.Credit(fakeTransaction);
+
+        Assert.ThrowsAsync<ValidationException>(() => actual);
     }
 
     [Fact]
     public void Debit_ZeroEqAmount_ThrowValidationException()
     {
-        TransactionBusiness transactionBusiness = this.SetupDefaultTransactionBusiness();
-        Transaction inputTransaction = new Transaction() { Amount = 0 };
+        TransactionBusiness arrangeTransactionBusiness = this.SetupDefaultTransactionBusiness();
+        Transaction fakeTransaction = new Transaction() { Amount = 0 };
 
-        Assert.ThrowsAsync<ValidationException>(() => 
-            transactionBusiness.Debit(inputTransaction));
+        Task actual = arrangeTransactionBusiness.Debit(fakeTransaction);
+
+        Assert.ThrowsAsync<ValidationException>(() => actual);
     }
 
     [Theory]
@@ -67,11 +70,11 @@ public class TransactionBusinessTest
     [InlineData(12012.2, -12012.2)]
     public async void Debit_PositiveAmount_ReturnSameNegativeAmount(double input, double expected)
     {
-        TransactionBusiness transactionBusiness = this.SetupDefaultTransactionBusiness(input);
-        Transaction inputTransaction = new Transaction() { Amount = input };
+        TransactionBusiness arrangeTransactionBusiness = this.SetupDefaultTransactionBusiness(input);
+        Transaction fakeTransaction = new Transaction() { Amount = input };
 
-        Transaction actualTransaction = await transactionBusiness.Debit(inputTransaction);
-        double actual = actualTransaction.Amount;
+        Transaction actTransaction = await arrangeTransactionBusiness.Debit(fakeTransaction);
+        double actual = actTransaction.Amount;
         
         Assert.Equal(expected, actual);
     }
@@ -82,11 +85,12 @@ public class TransactionBusinessTest
     [InlineData(-12012.2)]
     public void Debit_NegativeAmount_ThrowValidationException(double input)
     {
-        TransactionBusiness transactionBusiness = this.SetupDefaultTransactionBusiness(input);
-        Transaction inputTransaction = new Transaction() { Amount = input };
+        TransactionBusiness arrangeTransactionBusiness = this.SetupDefaultTransactionBusiness(input);
+        Transaction fakeTransaction = new Transaction() { Amount = input };
 
-        Assert.ThrowsAsync<ValidationException>(() => 
-            transactionBusiness.Debit(inputTransaction));
+        Task actual = arrangeTransactionBusiness.Debit(fakeTransaction);
+
+        Assert.ThrowsAsync<ValidationException>(() => actual);
     }
 
     [Theory]
@@ -95,11 +99,12 @@ public class TransactionBusinessTest
     [InlineData(12012.2, 12011.02)]
     public void Debit_DailyBalanceNotEnought_ThrowValidationException(double input, double balance)
     {
-        TransactionBusiness transactionBusiness = this.SetupDefaultTransactionBusiness(balance);
-        Transaction inputTransaction = new Transaction() { Amount = input };
+        TransactionBusiness arrangeTransactionBusiness = this.SetupDefaultTransactionBusiness(balance);
+        Transaction fakeTransaction = new Transaction() { Amount = input };
 
-        Assert.ThrowsAsync<ValidationException>(() => 
-            transactionBusiness.Debit(inputTransaction));
+        Task actual = arrangeTransactionBusiness.Debit(fakeTransaction);
+
+        Assert.ThrowsAsync<ValidationException>(() => actual);
     }
 
     [Theory]
@@ -112,9 +117,9 @@ public class TransactionBusinessTest
     [InlineData(0, 0)]
     public async void GetSumAmout_GetBalance_ReturnSameBalance(double input, double expected)
     {
-        TransactionBusiness transactionBusiness = this.SetupDefaultTransactionBusiness(input);
+        TransactionBusiness arrangeTransactionBusiness = this.SetupDefaultTransactionBusiness(input);
 
-        double actual = await transactionBusiness
+        double actual = await arrangeTransactionBusiness
                             .GetSumAmout(DateUtil.ToTimestampOnlyDate(DateTime.UtcNow));
         
         Assert.Equal(expected, actual);

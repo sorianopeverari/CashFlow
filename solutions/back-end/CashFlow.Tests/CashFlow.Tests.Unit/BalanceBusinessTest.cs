@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using CashFlow.Domain.Models.Enums;
 using System.Collections.Generic;
+using CashFlow.Domain.Business.Providers;
 
 namespace CashFlow.Tests.Unit;
 
@@ -20,20 +21,44 @@ public class BalanceBusinessTest
     [InlineData(12012.2, 12012.2)]
     public async void GetAmountSumByRange_GetAmout_ReturnSameAmout(double input, double expected)
     {
-        BalanceBusiness balanceBusiness = this.SetupDefaultBalanceBusiness(input);
+        BalanceBusiness arrangeBalanceBusiness = this.SetupDefaultBalanceBusiness(input);
 
-        Balance actualBalance = await balanceBusiness
+        Balance actBalance = await arrangeBalanceBusiness
                             .GetAmountSumByRange(DateUtil.ToTimestampOnlyDate(DateTime.UtcNow),
                                                  DateUtil.ToTimestampOnlyDate(DateTime.UtcNow),
                                                  BalanceType.Undefined);
-        
-        double actual = ((List<Transaction>)actualBalance.Transactions).FirstOrDefault().Amount;
+        double actual = ((List<Transaction>)actBalance.Transactions).FirstOrDefault().Amount;
 
         Assert.Equal(expected, actual);
     }
 
-    private BalanceBusiness SetupDefaultBalanceBusiness(double balance = 0)
+    [Theory]
+    [InlineData(10)]
+    [InlineData(10.2)]
+    [InlineData(12012.2)]
+    public void Create_CreatePositiveAmount_ReturnsTaskCompleted(double fakeAmount)
     {
+        long mockTime = this.SetupDateTimeProvider().UtcNow();
+        BalanceType mockBalanceType = BalanceType.Undefined;
+        BalanceBusiness stubBalanceBusiness = this.SetupDefaultBalanceBusiness();
+        
+        Exception actual = Record.Exception(
+            () => stubBalanceBusiness.Create(mockTime, fakeAmount, mockBalanceType).Start());
+        
+        Assert.IsNotType<Exception>(actual);
+    }
+
+    private IDateTimeProvider SetupDateTimeProvider()
+    {
+        Mock<IDateTimeProvider> dateTimeProvider = new();
+        dateTimeProvider.Setup(x => x.UtcNow())
+                        .Returns(DateUtil.ToTimestamp(DateTime.UtcNow));
+
+        return dateTimeProvider.Object;
+    }
+
+    private BalanceBusiness SetupDefaultBalanceBusiness(double balance = 0)
+    {               
         Mock<IBalanceRepository> balanceRepository = new();
         balanceRepository.Setup(x => x.Create(It.IsAny<long>(),
                                               It.IsAny<double>(),
