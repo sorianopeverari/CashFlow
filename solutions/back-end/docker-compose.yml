@@ -1,0 +1,84 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
+version: '3.4'
+
+services:
+  api_control:
+    image: cash-flow-api
+    container_name: cash-flow-control-v1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 5000:80
+      #- 5443:443
+    depends_on:
+      - db_rds
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Control.Development
+      - ASPNETCORE_URLS=http://+:80 #;https://+:443
+      #- ASPNETCORE_Kestrel__Certificates__Default__Password=dockerhttps
+      #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ~/.vsdbgcontrol:/remote_debugger:rw
+      #- ~/.aspnet/https:/https:ro
+
+  api_report:
+    image: cash-flow-api
+    container_name: cash-flow-report-v1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+     - 5001:80
+     #- 5444:443
+    depends_on:
+     - db_dw
+    environment:
+     - ASPNETCORE_ENVIRONMENT=Report.Development
+     - ASPNETCORE_URLS=http://+:80 #;https://+:443
+     #- ASPNETCORE_Kestrel__Certificates__Default__Password=dockerhttps
+     #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+     - ~/.vsdbgreport:/remote_debugger:rw
+     #- ~/.aspnet/https:/https:ro
+   
+  db_rds:
+    image: postgres
+    container_name: postgres_rds
+    environment:
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=Postgres@2023
+     - POSTGRES_DB=cash_flow_control
+    volumes:
+     - pgdatards:/var/lib/postgresql/data
+     - ./docker-entrypoint-initdb.d/initrds.sql
+    ports:
+     - 5432:5432/tcp
+      
+  db_dw: 
+    image: postgres
+    container_name: postgres_dw
+    environment:
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=Postgres@2023
+     - POSTGRES_DB=cash_flow_report
+    volumes:
+     - pgdatadw:/var/lib/postgresql/data
+     - ./docker-entrypoint-initdb.d/initdw.sql
+    ports:
+     - 5433:5432/tcp
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment: 
+      PGADMIN_DEFAULT_EMAIL: "postgres@postgres.com"
+      PGADMIN_DEFAULT_PASSWORD: "Postgres@2023"
+    ports: 
+        - 16543:80/tcp
+    depends_on:
+    - db_dw
+    - db_rds
+      
+volumes:
+    pgdatards:
+    pgdatadw:
