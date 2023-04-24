@@ -1,4 +1,4 @@
-# Cash Flow
+![CashFlow](https://raw.githubusercontent.com/sorianopeverari/cash-flow/main/docs/images/logo.png)
 
 Cash Flow is a system for cashiers to manage their cash flow and for traders to get statistical data to support decision making.
 
