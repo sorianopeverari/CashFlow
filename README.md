@@ -66,5 +66,5 @@ Licensed under the [MIT License](/LICENSE), Copyright (c) 2023 - Felipe Soriano 
 
 # Thanks
 
-Thanks to [Erick Vieira](https://github.com/vieiraerick), supporter of this project of system analysis, architecture and code testing of a contracting process.
+Thanks to [Erick Vieira](https://github.com/vieiraerick), supporter of this project of system analysis, architecture and code testing of the hiring  process.
 
