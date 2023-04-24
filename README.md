@@ -2,6 +2,8 @@
 
 Cash Flow is a system for cashiers to manage their cash flow and for traders to get statistical data to support decision making.
 
+Software Engineering documentation and artifacts in [Wiki](https://github.com/sorianopeverari/cash-flow/wiki).
+
 # Table of contents
 
 - [Prerequisites](#Prerequisites)
